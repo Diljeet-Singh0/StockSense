@@ -14,14 +14,19 @@ const moveTypeLabels = {
 export default function DashboardPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ locationId: '', categoryId: '', operation: '', status: '' });
 
   useEffect(() => {
-    fetch('/api/dashboard')
+    const query = new URLSearchParams(
+      Object.entries(filters).filter(([, value]) => value)
+    ).toString();
+    setLoading(true);
+    fetch(`/api/dashboard${query ? `?${query}` : ''}`)
       .then((res) => res.json())
       .then(setData)
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [filters]);
 
   if (loading) {
     return (
@@ -47,6 +52,7 @@ export default function DashboardPage() {
   const lowStockList = data?.lowStockList || [];
   const pendingOrders = data?.pendingOrders || [];
   const locations = data?.locations || [];
+  const categories = data?.categories || [];
 
   return (
     <div className="space-y-6 animate-fade-in pb-10 max-w-7xl">
@@ -98,8 +104,56 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      <section className="bg-[#10231c] rounded-2xl p-4 sm:p-5 text-white shadow-xl shadow-emerald-950/10">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-emerald-300 font-extrabold">Control Tower Filters</p>
+            <h2 className="text-base font-bold mt-1">Focus the operation before you act</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full lg:w-auto lg:min-w-[620px]">
+            <select
+              value={filters.operation}
+              onChange={(event) => setFilters((current) => ({ ...current, operation: event.target.value }))}
+              className="bg-white/10 border border-white/15 text-white rounded-xl px-3 py-2 text-xs font-semibold"
+            >
+              <option value="" className="text-slate-900">All document types</option>
+              <option value="RECEIPT" className="text-slate-900">Receipts / inbound</option>
+              <option value="DELIVERY" className="text-slate-900">Deliveries / outbound</option>
+              <option value="TRANSFER" className="text-slate-900">Internal transfers</option>
+            </select>
+            <select
+              value={filters.status}
+              onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}
+              className="bg-white/10 border border-white/15 text-white rounded-xl px-3 py-2 text-xs font-semibold"
+            >
+              <option value="" className="text-slate-900">Open workflow statuses</option>
+              <option value="READY" className="text-slate-900">Ready</option>
+              <option value="WAITING" className="text-slate-900">Waiting</option>
+              <option value="DRAFT" className="text-slate-900">Draft</option>
+              <option value="DONE" className="text-slate-900">Done</option>
+            </select>
+            <select
+              value={filters.locationId}
+              onChange={(event) => setFilters((current) => ({ ...current, locationId: event.target.value }))}
+              className="bg-white/10 border border-white/15 text-white rounded-xl px-3 py-2 text-xs font-semibold"
+            >
+              <option value="" className="text-slate-900">All warehouses</option>
+              {locations.map((location) => <option key={location.id} value={location.id} className="text-slate-900">{location.name}</option>)}
+            </select>
+            <select
+              value={filters.categoryId}
+              onChange={(event) => setFilters((current) => ({ ...current, categoryId: event.target.value }))}
+              className="bg-white/10 border border-white/15 text-white rounded-xl px-3 py-2 text-xs font-semibold"
+            >
+              <option value="" className="text-slate-900">All categories</option>
+              {categories.map((category) => <option key={category.id} value={category.id} className="text-slate-900">{category.name}</option>)}
+            </select>
+          </div>
+        </div>
+      </section>
+
       {/* Primary KPI Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total SKUs */}
         <Link
           href="/products"
@@ -115,6 +169,20 @@ export default function DashboardPage() {
             {kpis.totalProducts ?? 0}
           </p>
           <p className="text-xs text-slate-400 mt-1">Managed product lines</p>
+        </Link>
+
+        <Link
+          href="/products?filter=in"
+          className="bg-white rounded-2xl p-5 border border-slate-100 hover:border-teal-200 hover:shadow-lg hover:shadow-teal-900/5 transition-all group"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">In Stock SKUs</span>
+            <span className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center text-lg font-bold">✓</span>
+          </div>
+          <p className="text-3xl font-extrabold text-teal-700 mt-3 group-hover:text-teal-800 transition-colors">
+            {kpis.totalProductsInStock ?? 0}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">Available at selected scope</p>
         </Link>
 
         {/* Total Stock Asset Valuation */}

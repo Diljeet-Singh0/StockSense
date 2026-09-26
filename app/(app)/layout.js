@@ -91,6 +91,15 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    label: 'My Profile',
+    href: '/profile',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19a6 6 0 00-12 0m6-8a4 4 0 100-8 4 4 0 000 8zm6-1h6m-3-3v6" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AppLayout({ children }) {

@@ -2,41 +2,59 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { imageForProduct } from '@/lib/product-images';
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const locationId = searchParams.get('locationId') || '';
+    const categoryId = searchParams.get('categoryId') || '';
+    const operation = searchParams.get('operation') || '';
+    const status = searchParams.get('status') || '';
+    const productWhere = categoryId ? { categoryId } : {};
+    const stockWhere = locationId ? { locationId } : {};
+    const documentStatus = status ? { status } : { status: { in: ['DRAFT', 'WAITING', 'READY'] } };
+    const filterLocation = locationId ? { locationId } : {};
+
     const [
-      totalProducts,
-      lowStockCountResult,
-      outOfStockCountResult,
+      inventoryProducts,
       pendingReceipts,
       pendingDeliveries,
       scheduledTransfers,
       pendingCustomerOrders,
       recentMoves,
-      urgentLowStockProducts,
       pendingStoreOrders,
       locationsSummary,
       valuationResult,
+      categories,
     ] = await Promise.all([
-      prisma.product.count(),
-      // Low stock count
-      prisma.$queryRaw`
-        SELECT COUNT(DISTINCT p.id)::int as count
-        FROM products p
-        JOIN stock_levels sl ON sl.product_id = p.id
-        WHERE p.reorder_point > 0 AND sl.quantity <= p.reorder_point AND sl.quantity > 0
-      `,
-      // Out of stock count
-      prisma.$queryRaw`
-        SELECT COUNT(DISTINCT p.id)::int as count
-        FROM products p
-        LEFT JOIN stock_levels sl ON sl.product_id = p.id
-        GROUP BY p.id
-        HAVING COALESCE(SUM(sl.quantity), 0) = 0
-      `,
-      prisma.receipt.count({ where: { status: { in: ['DRAFT', 'WAITING', 'READY'] } } }),
-      prisma.deliveryOrder.count({ where: { status: { in: ['DRAFT', 'WAITING', 'READY'] } } }),
-      prisma.internalTransfer.count({ where: { status: { in: ['DRAFT', 'WAITING', 'READY'] } } }),
+      prisma.product.findMany({
+        where: productWhere,
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          uom: true,
+          price: true,
+          reorderPoint: true,
+          stockLevels: {
+            where: stockWhere,
+            select: { quantity: true, locationId: true },
+          },
+        },
+      }),
+      operation && operation !== 'RECEIPT'
+        ? Promise.resolve(0)
+        : prisma.receipt.count({ where: { ...documentStatus, ...filterLocation } }),
+      operation && operation !== 'DELIVERY'
+        ? Promise.resolve(0)
+        : prisma.deliveryOrder.count({ where: { ...documentStatus, ...filterLocation } }),
+      operation && operation !== 'TRANSFER'
+        ? Promise.resolve(0)
+        : prisma.internalTransfer.count({
+        where: {
+          ...documentStatus,
+          ...(locationId ? { OR: [{ sourceLocationId: locationId }, { destLocationId: locationId }] } : {}),
+        },
+      }),
       prisma.customerOrder.count({ where: { status: { in: ['PLACED', 'CONFIRMED', 'OUT_FOR_DELIVERY'] } } }),
       prisma.stockMove.findMany({
         take: 12,
@@ -46,18 +64,6 @@ export async function GET() {
           location: { select: { name: true } },
           creator: { select: { name: true } },
         },
-      }),
-      // Urgent products list: Products with low or 0 stock
-      prisma.product.findMany({
-        where: {
-          reorderPoint: { gt: 0 },
-        },
-        include: {
-          stockLevels: {
-            include: { location: { select: { name: true } } },
-          },
-        },
-        take: 30,
       }),
       // Pending store customer orders needing warehouse fulfillment
       prisma.customerOrder.findMany({
@@ -89,28 +95,36 @@ export async function GET() {
         FROM stock_levels sl
         JOIN products p ON p.id = sl.product_id
       `,
+      prisma.category.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } }),
     ]);
 
+    const productHealth = inventoryProducts.map((product) => {
+      const totalStock = product.stockLevels.reduce((sum, level) => sum + Number(level.quantity), 0);
+      const reorderPoint = Number(product.reorderPoint);
+      return { ...product, totalStock, reorderPoint };
+    });
+    const totalProducts = productHealth.length;
+    const totalProductsInStock = productHealth.filter((product) => product.totalStock > 0).length;
+    const lowStockCount = productHealth.filter(
+      (product) => product.totalStock > 0 && product.reorderPoint > 0 && product.totalStock <= product.reorderPoint
+    ).length;
+    const outOfStockCount = productHealth.filter((product) => product.totalStock <= 0).length;
+
     // Process urgent low stock items
-    const lowStockList = [];
-    for (const prod of urgentLowStockProducts) {
-      const totalStock = prod.stockLevels.reduce((sum, sl) => sum + Number(sl.quantity), 0);
-      const reorder = Number(prod.reorderPoint);
-      if (totalStock <= reorder) {
-        lowStockList.push({
-          id: prod.id,
-          name: prod.name,
-          sku: prod.sku,
-          uom: prod.uom,
-          price: Number(prod.price),
-          totalStock,
-          reorderPoint: reorder,
-          deficit: Math.max(0, reorder - totalStock),
-          imageUrl: imageForProduct(prod.name),
-        });
-      }
-    }
-    lowStockList.sort((a, b) => a.totalStock - b.totalStock);
+    const lowStockList = productHealth
+      .filter((product) => product.reorderPoint > 0 && product.totalStock <= product.reorderPoint)
+      .map((product) => ({
+        id: product.id,
+        name: product.name,
+        sku: product.sku,
+        uom: product.uom,
+        price: Number(product.price),
+        totalStock: product.totalStock,
+        reorderPoint: product.reorderPoint,
+        deficit: Math.max(0, product.reorderPoint - product.totalStock),
+        imageUrl: imageForProduct(product.name),
+      }))
+      .sort((a, b) => a.totalStock - b.totalStock);
 
     // Locations summary
     const locationsWithUnits = locationsSummary.map((loc) => {
@@ -129,8 +143,9 @@ export async function GET() {
     return NextResponse.json({
       kpis: {
         totalProducts,
-        lowStock: lowStockCountResult[0]?.count || 0,
-        outOfStock: outOfStockCountResult.length || 0,
+        totalProductsInStock,
+        lowStock: lowStockCount,
+        outOfStock: outOfStockCount,
         pendingReceipts,
         pendingDeliveries,
         scheduledTransfers,
@@ -151,6 +166,8 @@ export async function GET() {
         deliveryRef: o.deliveryOrder?.reference || null,
       })),
       locations: locationsWithUnits,
+      categories,
+      filters: { locationId, categoryId, operation, status },
       recentMoves: recentMoves.map((m) => ({
         ...m,
         quantityChange: m.quantityChange.toString(),

@@ -47,6 +47,8 @@ const isAdminRoute = (pathname) => {
     pathname.startsWith('/warehouses/') ||
     pathname === '/suppliers' ||
     pathname.startsWith('/suppliers/')
+    || pathname === '/profile' ||
+    pathname.startsWith('/profile/')
   );
 };
 
