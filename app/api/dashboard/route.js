@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { imageForProduct } from '@/lib/product-images';
 
 export async function GET() {
   try {
@@ -64,7 +65,7 @@ export async function GET() {
         orderBy: { createdAt: 'desc' },
         take: 5,
         include: {
-          user: { select: { name: true, email: true, phone: true } },
+          customer: { select: { name: true, email: true, phone: true } },
           lines: {
             include: { product: { select: { name: true, sku: true } } },
           },
@@ -105,7 +106,7 @@ export async function GET() {
           totalStock,
           reorderPoint: reorder,
           deficit: Math.max(0, reorder - totalStock),
-          imageUrl: prod.imageUrl,
+          imageUrl: imageForProduct(prod.name),
         });
       }
     }
@@ -143,8 +144,8 @@ export async function GET() {
         status: o.status,
         totalAmount: Number(o.totalAmount),
         createdAt: o.createdAt,
-        customerName: o.user.name,
-        customerPhone: o.user.phone,
+        customerName: o.customer?.name,
+        customerPhone: o.customer?.phone,
         itemCount: o.lines.length,
         deliveryOrderId: o.deliveryOrder?.id || null,
         deliveryRef: o.deliveryOrder?.reference || null,

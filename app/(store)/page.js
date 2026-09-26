@@ -5,13 +5,25 @@ import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 
 const categoryIcons = {
-  'Dairy & Breakfast': '🥛',
+  'Dairy & Eggs': '🥛',
+  'Fruits & Vegetables': '🥬',
   'Atta, Rice & Dal': '🌾',
   'Snacks & Munchies': '🍪',
-  'Beverages': '☕',
-  'Instant & Frozen Food': '🍜',
+  'Cold Drinks & Juices': '🥤',
+  'Instant & Ready to Eat': '🍜',
   'Personal Care': '🧼',
-  'Home & Cleaning': '🧹',
+  'Cleaning & Household': '🧹',
+};
+
+const categoryPhotos = {
+  'Dairy & Eggs': '/products/milk.jpg',
+  'Fruits & Vegetables': '/products/tomato.jpg',
+  'Atta, Rice & Dal': '/products/rice.jpg',
+  'Snacks & Munchies': '/products/chips.jpg',
+  'Cold Drinks & Juices': '/products/cola.jpg',
+  'Instant & Ready to Eat': '/products/noodles.jpg',
+  'Personal Care': '/products/soap.jpg',
+  'Cleaning & Household': '/products/dishwash.jpg',
 };
 
 const quickKeywords = ['Milk', 'Ghee', 'Atta', 'Rice', 'Biscuits', 'Coffee', 'Chips'];
@@ -45,38 +57,31 @@ export default function StoreHomePage() {
   };
 
   return (
-    <div className="space-y-10 animate-fade-in pb-16">
-      {/* Ultra-Modern Quick-Commerce Hero Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white">
-        {/* Glow Effects */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10">
-          <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Direct Dark Store Warehouse Fulfillment</span>
-              <span>•</span>
-              <span>10-15 Min Delivery</span>
+    <div className="pb-16">
+      <section className="relative overflow-hidden bg-[#10231c] text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(52,211,153,0.22),transparent_32%),radial-gradient(circle_at_10%_80%,rgba(251,191,36,0.12),transparent_28%)]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative">
+          <div className="grid lg:grid-cols-[1.4fr_0.8fr] gap-8 items-end">
+          <div className="max-w-2xl space-y-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/8 border border-white/10 text-emerald-200 text-xs font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+              Open now · Indiranagar dark store
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none">
-              Daily Essentials & Groceries,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300">
-                Delivered in Minutes.
-              </span>
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05]">
+              Fresh groceries,
+              <span className="block text-emerald-300">at your door in minutes.</span>
             </h1>
 
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
-              Direct dispatch from regional fulfillment dark stores to your door. Real-time live inventory with Cash on Delivery payment.
+            <p className="text-emerald-50/70 text-sm sm:text-base leading-relaxed max-w-xl">
+              Milk, atta, snacks, and daily essentials picked from live warehouse stock. Pay cash when it arrives.
             </p>
 
             {/* Quick Search Bar inside Hero */}
             <div className="relative pt-2">
               <div className="relative flex items-center">
                 <svg
-                  className="absolute left-4 w-5 h-5 text-slate-400"
+                  className="absolute left-4 w-5 h-5 text-emerald-700"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -87,13 +92,13 @@ export default function StoreHomePage() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search 1,000+ items: fresh milk, atta, rice, ghee, snacks..."
-                  className="w-full pl-12 pr-28 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white/15 transition-all shadow-xl shadow-black/20"
+                  placeholder="Search milk, atta, rice, snacks..."
+                  className="w-full pl-12 pr-24 py-4 bg-white text-slate-900 placeholder:text-slate-400 border-0 rounded-2xl text-sm shadow-2xl shadow-black/20"
                 />
                 {search && (
                   <button
                     onClick={() => setSearch('')}
-                    className="absolute right-4 text-xs font-bold text-slate-400 hover:text-white bg-white/10 px-2 py-1 rounded-lg"
+                    className="absolute right-4 text-xs font-bold text-slate-500 hover:text-slate-900 bg-slate-100 px-2 py-1 rounded-lg"
                   >
                     Clear
                   </button>
@@ -107,7 +112,7 @@ export default function StoreHomePage() {
                   <button
                     key={kw}
                     onClick={() => setSearch(kw)}
-                    className="px-2.5 py-1 bg-white/5 hover:bg-white/15 border border-white/10 rounded-lg text-slate-300 hover:text-white transition-all text-[11px] font-semibold"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-emerald-50 transition-all text-[11px] font-semibold"
                   >
                     {kw}
                   </button>
@@ -116,23 +121,33 @@ export default function StoreHomePage() {
             </div>
 
             {/* Benefit highlights */}
-            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-200">
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <span className="text-emerald-400">✓</span> 100% Cash on Delivery
-              </div>
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <span className="text-emerald-400">✓</span> ₹0 Packaging & Delivery Fee
-              </div>
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <span className="text-emerald-400">✓</span> Zero Substitution Guarantee
-              </div>
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-semibold text-emerald-50/90">
+              {['Cash on delivery', 'Free delivery', 'No substitutions'].map((label) => (
+                <div key={label} className="flex items-center gap-1.5 bg-white/10 border border-white/10 px-3 py-1.5 rounded-full">
+                  <span className="text-emerald-300">✓</span> {label}
+                </div>
+              ))}
             </div>
+          </div>
+          <div className="hidden lg:grid grid-cols-2 gap-3">
+            {[
+              ['10–15', 'minute dispatch'],
+              ['₹0', 'delivery fee'],
+              ['COD', 'pay at the door'],
+              ['Live', 'shelf stock'],
+            ].map(([value, label]) => (
+              <div key={label} className="rounded-2xl bg-white/8 border border-white/10 p-4">
+                <p className="text-2xl font-extrabold text-white">{value}</p>
+                <p className="text-xs text-emerald-100/70 mt-1">{label}</p>
+              </div>
+            ))}
+          </div>
           </div>
         </div>
       </section>
 
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-8">
         {/* Category Visual Cards */}
         {categories.length > 0 && (
           <section className="space-y-3">
@@ -151,13 +166,13 @@ export default function StoreHomePage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-1">
               <button
                 onClick={() => setSelectedCategory('')}
-                className={`p-3.5 rounded-2xl border transition-all text-left flex items-center gap-3 ${
+                className={`shrink-0 min-w-[148px] p-3.5 rounded-2xl border transition-all text-left flex items-center gap-3 ${
                   selectedCategory === ''
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-md'
-                    : 'bg-white text-slate-700 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'bg-[#10231c] text-white border-[#10231c] shadow-md'
+                    : 'bg-white text-slate-700 border-slate-200/80 hover:border-emerald-200'
                 }`}
               >
                 <span className="text-2xl">⚡</span>
@@ -175,13 +190,13 @@ export default function StoreHomePage() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(isSelected ? '' : cat.id)}
-                    className={`p-3.5 rounded-2xl border transition-all text-left flex items-center gap-3 ${
+                    className={`shrink-0 min-w-[168px] p-3.5 rounded-2xl border transition-all text-left flex items-center gap-3 ${
                       isSelected
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
-                        : 'bg-white text-slate-700 border-slate-200/80 hover:border-emerald-300 hover:bg-slate-50'
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
+                        : 'bg-white text-slate-700 border-slate-200/80 hover:border-emerald-200'
                     }`}
                   >
-                    <span className="text-2xl">{icon}</span>
+                    <img src={categoryPhotos[cat.name] || '/products/rice.jpg'} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0" />
                     <div className="min-w-0">
                       <p className="text-xs font-black truncate leading-tight">{cat.name}</p>
                       <p className="text-[10px] opacity-70 mt-0.5">Dispatched fast</p>
@@ -245,7 +260,7 @@ export default function StoreHomePage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5">
               {products.map((product) => {
                 const qtyInCart = getItemQuantity(product.id);
                 const isOut = !product.inStock;
@@ -254,16 +269,16 @@ export default function StoreHomePage() {
                 return (
                   <div
                     key={product.id}
-                    className="group bg-white rounded-3xl border border-slate-200/80 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-600/10 transition-all duration-300 flex flex-col overflow-hidden relative"
+                    className="group bg-white rounded-2xl border border-slate-200/80 hover:border-emerald-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/8 transition-all duration-200 flex flex-col overflow-hidden relative"
                   >
                     {/* Delivery Time Badge */}
-                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                    <div className="absolute top-2 left-2 z-10 flex items-center gap-1 bg-slate-950/75 backdrop-blur-md text-white text-[10px] font-black px-2 py-0.5 rounded-full">
                       <span>⚡</span>
                       <span>15 MINS</span>
                     </div>
 
                     {/* Stock Status Badge */}
-                    <div className="absolute top-3 right-3 z-10">
+                    <div className="absolute top-2 right-2 z-10">
                       {isOut ? (
                         <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                           Sold Out
@@ -278,23 +293,17 @@ export default function StoreHomePage() {
                     {/* Image Area */}
                     <Link
                       href={`/product/${product.id}`}
-                      className="relative aspect-square bg-slate-50/80 overflow-hidden block p-3 group-hover:bg-slate-100/50 transition-colors"
+                      className="relative aspect-square bg-[#f4f7f5] overflow-hidden block"
                     >
-                      {product.imageUrl ? (
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-4xl text-slate-300">
-                          📦
-                        </div>
-                      )}
+                      <img
+                        src={product.imageUrl || '/products/rice.jpg'}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </Link>
 
                     {/* Info & Cart Action */}
-                    <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                    <div className="p-3.5 flex-1 flex flex-col justify-between gap-3">
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                           {product.category?.name || 'Daily Need'}
@@ -310,7 +319,7 @@ export default function StoreHomePage() {
                       </div>
 
                       {/* Pricing & Add Stepper */}
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <div className="pt-2 border-t border-slate-100 flex flex-col min-[420px]:flex-row min-[420px]:items-center justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-1.5">
                             <span className="text-sm sm:text-base font-black text-slate-900">
@@ -375,7 +384,7 @@ export default function StoreHomePage() {
         </section>
 
         {/* Why StockSense Dark Store Warehouse Direct Section */}
-        <section className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-8 sm:p-12 space-y-8">
+        <section className="bg-[#10231c] text-white rounded-3xl p-6 sm:p-10 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-emerald-400 text-xs font-extrabold uppercase tracking-widest">
               StockSense Advantage
@@ -389,7 +398,7 @@ export default function StoreHomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+            <div className="bg-white/[0.06] border border-white/10 rounded-2xl p-6 space-y-3">
               <span className="text-3xl inline-block">⚡</span>
               <h4 className="font-bold text-sm text-white">Ultra-Fast 15-Min Dispatch</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -397,7 +406,7 @@ export default function StoreHomePage() {
               </p>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+            <div className="bg-white/[0.06] border border-white/10 rounded-2xl p-6 space-y-3">
               <span className="text-3xl inline-block">💵</span>
               <h4 className="font-bold text-sm text-white">Cash on Delivery</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -405,7 +414,7 @@ export default function StoreHomePage() {
               </p>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+            <div className="bg-white/[0.06] border border-white/10 rounded-2xl p-6 space-y-3">
               <span className="text-3xl inline-block">📦</span>
               <h4 className="font-bold text-sm text-white">Atomic Live Inventory</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -413,7 +422,7 @@ export default function StoreHomePage() {
               </p>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+            <div className="bg-white/[0.06] border border-white/10 rounded-2xl p-6 space-y-3">
               <span className="text-3xl inline-block">🛡️</span>
               <h4 className="font-bold text-sm text-white">Zero Question Replacement</h4>
               <p className="text-xs text-slate-400 leading-relaxed">

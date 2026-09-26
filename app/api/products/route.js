@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getUserFromHeaders } from '@/lib/session';
+import { imageForProduct } from '@/lib/product-images';
 
 export async function GET(request) {
   try {
@@ -39,7 +40,7 @@ export async function GET(request) {
       return {
         ...p,
         price: Number(p.price),
-        imageUrl: p.imageUrl,
+        imageUrl: imageForProduct(p.name),
         isVisibleOnStore: p.isVisibleOnStore,
         totalStock,
         reorderPoint: Number(p.reorderPoint),

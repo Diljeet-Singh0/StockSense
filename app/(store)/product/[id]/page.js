@@ -61,11 +61,7 @@ export default function StoreProductPage({ params }) {
       <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 shadow-sm">
         {/* Image Container */}
         <div className="relative aspect-square bg-slate-50/70 rounded-3xl overflow-hidden border border-slate-100 flex items-center justify-center p-8">
-          {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain mix-blend-multiply hover:scale-105 transition-transform duration-300" />
-          ) : (
-            <span className="text-7xl text-slate-300">📦</span>
-          )}
+          <img src={product.imageUrl || '/products/rice.jpg'} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
 
           {/* Express Badge */}
           <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
@@ -83,7 +79,7 @@ export default function StoreProductPage({ params }) {
         {/* Info & Cart Action */}
         <div className="space-y-6 flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2.5 py-1 rounded-xl uppercase tracking-wider">
                 {product.category?.name || 'Pantry Essential'}
               </span>
@@ -115,7 +111,7 @@ export default function StoreProductPage({ params }) {
             {/* Price Box */}
             <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-100 space-y-1">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Direct Dark Store Wholesale Price</span>
-              <div className="flex items-baseline gap-3">
+              <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <span className="text-3xl font-black text-slate-900">₹{Number(product.price).toFixed(0)}</span>
                 {estimatedMrp > Number(product.price) && (
                   <span className="text-sm text-slate-400 line-through">MRP: ₹{estimatedMrp}</span>
@@ -156,7 +152,7 @@ export default function StoreProductPage({ params }) {
           {/* Action Row */}
           <div className="pt-2 border-t border-slate-100 space-y-3">
             {product.inStock ? (
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex items-center border border-slate-200 rounded-2xl bg-slate-50 shadow-sm">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}

@@ -162,8 +162,8 @@ export default function CheckoutPage() {
         {/* Left Column: Delivery Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* 1. Address Section */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-7 shadow-sm space-y-5">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-7 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-xs">1</span>
                 <span>Delivery Address</span>
@@ -345,12 +345,8 @@ export default function CheckoutPage() {
               {items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-3 text-xs py-1.5 border-b border-slate-100">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 shrink-0 flex items-center justify-center p-0.5">
-                      {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain" />
-                      ) : (
-                        <span>📦</span>
-                      )}
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 shrink-0 overflow-hidden">
+                      <img src={item.imageUrl || '/products/rice.jpg'} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <span className="truncate text-slate-800 font-medium">{item.name}</span>
                   </div>

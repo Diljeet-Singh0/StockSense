@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { imageForProduct } from '@/lib/product-images';
 
 export async function GET(request, { params }) {
   try {
@@ -22,7 +23,7 @@ export async function GET(request, { params }) {
       product: {
         ...product,
         price: Number(product.price),
-        imageUrl: product.imageUrl,
+        imageUrl: imageForProduct(product.name),
         isVisibleOnStore: product.isVisibleOnStore,
         reorderPoint: Number(product.reorderPoint),
         totalStock: product.stockLevels.reduce((sum, sl) => sum + Number(sl.quantity), 0),

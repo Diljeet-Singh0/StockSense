@@ -33,13 +33,13 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Order is already canceled' }, { status: 400 });
     }
 
-    // Default fulfillment warehouse
-    const fulfillmentHub = await prisma.location.findFirst({
-      where: { isActive: true },
-      orderBy: { createdAt: 'asc' },
+    const reservationMoves = await prisma.stockMove.findMany({
+      where: {
+        referenceId: order.id,
+        referenceType: 'customer_order',
+        moveType: 'DELIVERY',
+      },
     });
-
-    const locationId = order.deliveryOrder?.locationId || fulfillmentHub?.id;
 
     // Transaction: Cancel order, cancel delivery order, restore stock, write ledger
     await prisma.$transaction(async (tx) => {
@@ -57,40 +57,35 @@ export async function POST(request, { params }) {
         });
       }
 
-      // 3. Restore stock & record stock moves
-      if (locationId) {
-        for (const line of order.lines) {
-          const qty = Number(line.quantity);
+      // 3. Put each line back in the aisle it was picked from
+      for (const line of order.lines) {
+        const qty = Number(line.quantity);
+        const reserved = reservationMoves.find((move) => move.productId === line.productId);
+        const locationId = reserved?.locationId || order.deliveryOrder?.locationId;
+        if (!locationId) continue;
 
-          await tx.stockLevel.upsert({
-            where: {
-              productId_locationId: {
-                productId: line.productId,
-                locationId,
-              },
-            },
-            update: {
-              quantity: { increment: qty },
-            },
-            create: {
+        await tx.stockLevel.upsert({
+          where: {
+            productId_locationId: {
               productId: line.productId,
               locationId,
-              quantity: qty,
             },
-          });
+          },
+          update: { quantity: { increment: qty } },
+          create: { productId: line.productId, locationId, quantity: qty },
+        });
 
-          await tx.stockMove.create({
-            data: {
-              productId: line.productId,
-              locationId,
-              quantityChange: qty, // Positive return to stock
-              moveType: 'ADJUSTMENT',
-              referenceId: order.id,
-              referenceType: 'order_canceled_restock',
-              createdBy: userId,
-            },
-          });
-        }
+        await tx.stockMove.create({
+          data: {
+            productId: line.productId,
+            locationId,
+            quantityChange: qty,
+            moveType: 'ADJUSTMENT',
+            referenceId: order.id,
+            referenceType: 'order_canceled_restock',
+            createdBy: userId,
+          },
+        });
       }
     });
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getUserFromHeaders } from '@/lib/session';
+import { imageForProduct } from '@/lib/product-images';
 
 export async function GET(request) {
   try {
@@ -41,7 +42,7 @@ export async function GET(request) {
         quantity: Number(l.quantity),
         unitPrice: Number(l.unitPrice),
         total: Number(l.total),
-        product: l.product,
+        product: { ...l.product, imageUrl: imageForProduct(l.product.name) },
       })),
     }));
 
@@ -70,17 +71,17 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Complete shipping address is required' }, { status: 400 });
     }
 
-    // Default fulfillment warehouse (Main Warehouse / Fulfillment Hub)
-    const fulfillmentHub = await prisma.location.findFirst({
+    const locations = await prisma.location.findMany({
       where: { isActive: true },
       orderBy: { createdAt: 'asc' },
     });
+    const fulfillmentHub = locations.find((loc) => !loc.parentId) || locations[0];
 
     if (!fulfillmentHub) {
       return NextResponse.json({ error: 'No active fulfillment warehouse found' }, { status: 500 });
     }
 
-    // 1. Verify stock availability for all items before starting transaction
+    // 1. Verify stock across every active location, then pick the aisle that can fill the line.
     const insufficientStockErrors = [];
     const validatedProducts = [];
     let calculatedTotal = 0;
@@ -88,21 +89,24 @@ export async function POST(request) {
     for (const item of items) {
       const product = await prisma.product.findUnique({
         where: { id: item.productId },
-        include: {
-          stockLevels: {
-            where: { locationId: fulfillmentHub.id },
-          },
-        },
+        include: { stockLevels: true },
       });
 
-      if (!product) {
+      if (!product || !product.isVisibleOnStore) {
         return NextResponse.json({ error: `Product not found: ${item.productId}` }, { status: 404 });
       }
 
-      const availableQty = product.stockLevels[0] ? Number(product.stockLevels[0].quantity) : 0;
       const requestedQty = Number(item.quantity);
+      if (!Number.isFinite(requestedQty) || requestedQty <= 0) {
+        return NextResponse.json({ error: 'Each item needs a quantity greater than zero' }, { status: 400 });
+      }
 
-      if (availableQty < requestedQty) {
+      const availableQty = product.stockLevels.reduce((sum, level) => sum + Number(level.quantity), 0);
+      const pick = [...product.stockLevels]
+        .sort((a, b) => Number(b.quantity) - Number(a.quantity))
+        .find((level) => Number(level.quantity) >= requestedQty);
+
+      if (!pick) {
         insufficientStockErrors.push({
           productName: product.name,
           sku: product.sku,
@@ -120,6 +124,7 @@ export async function POST(request) {
         quantity: requestedQty,
         unitPrice,
         lineTotal,
+        locationId: pick?.locationId || fulfillmentHub.id,
       });
     }
 
@@ -178,7 +183,7 @@ export async function POST(request) {
         data: {
           reference: `DEL-${orderNumber}`,
           customerName: `${shippingAddress.name || 'Customer'} (COD #${orderNumber})`,
-          locationId: fulfillmentHub.id,
+          locationId: validatedProducts[0]?.locationId || fulfillmentHub.id,
           status: 'READY',
           source: 'CUSTOMER_ORDER',
           customerOrderId: order.id,
@@ -199,7 +204,7 @@ export async function POST(request) {
           where: {
             productId_locationId: {
               productId: item.product.id,
-              locationId: fulfillmentHub.id,
+              locationId: item.locationId,
             },
           },
           data: {
@@ -210,7 +215,7 @@ export async function POST(request) {
         await tx.stockMove.create({
           data: {
             productId: item.product.id,
-            locationId: fulfillmentHub.id,
+            locationId: item.locationId,
             quantityChange: -item.quantity,
             moveType: 'DELIVERY',
             referenceId: order.id,

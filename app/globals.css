@@ -1,33 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f4f7f5;
+  --foreground: #12211b;
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: #e0e7ff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #475569;
-  --accent: #06b6d4;
-  --accent-light: #cffafe;
-  --muted: #f1f5f9;
-  --muted-foreground: #94a3b8;
-  --border: #e2e8f0;
-  --ring: #6366f1;
-  --success: #10b981;
-  --success-light: #d1fae5;
-  --warning: #f59e0b;
+  --card-foreground: #12211b;
+  --primary: #0f9f6e;
+  --primary-hover: #0b7d56;
+  --primary-light: #d8f5e8;
+  --secondary: #eef3f0;
+  --secondary-foreground: #3d5248;
+  --accent: #f59e0b;
+  --accent-light: #fef3c7;
+  --muted: #eef3f0;
+  --muted-foreground: #7b8d84;
+  --border: #e3ebe6;
+  --ring: #0f9f6e;
+  --success: #0f9f6e;
+  --success-light: #d8f5e8;
+  --warning: #d97706;
   --warning-light: #fef3c7;
-  --danger: #ef4444;
-  --danger-light: #fee2e2;
-  --sidebar-bg: #0f172a;
-  --sidebar-text: #cbd5e1;
-  --sidebar-active: #6366f1;
-  --sidebar-hover: #1e293b;
-  --radius: 0.75rem;
+  --danger: #e11d48;
+  --danger-light: #ffe4e6;
+  --sidebar-bg: #10231c;
+  --sidebar-text: #c9d8d0;
+  --sidebar-active: #34d399;
+  --sidebar-hover: #1a3329;
+  --radius: 1rem;
 }
 
 @theme inline {
@@ -46,15 +46,24 @@
   --color-sidebar-text: var(--sidebar-text);
   --color-sidebar-active: var(--sidebar-active);
   --color-sidebar-hover: var(--sidebar-hover);
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(1200px 500px at 100% -10%, rgba(15, 159, 110, 0.08), transparent 55%),
+    radial-gradient(900px 420px at -10% 0%, rgba(245, 158, 11, 0.07), transparent 50%),
+    var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+}
+
+::selection {
+  background: #bbf7d0;
+  color: #064e3b;
 }
 
 /* ─── Animations ──────────────────────────────────────────────────────────── */
@@ -149,5 +158,87 @@ body {
 
 .badge-canceled {
   background: var(--danger-light);
-  color: #991b1b;
+  color: #9f1239;
+}
+
+/* ─── Shared UI polish ────────────────────────────────────────────────────── */
+
+input,
+select,
+textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0f9f6e !important;
+  box-shadow: 0 0 0 4px rgba(15, 159, 110, 0.12);
+}
+
+table thead th {
+  letter-spacing: 0.06em;
+}
+
+table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.page-shell {
+  animation: fadeIn 0.35s ease-out;
+}
+
+.surface {
+  background: #fff;
+  border: 1px solid rgba(18, 33, 27, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -24px rgba(16, 35, 28, 0.45);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, #14b87d 0%, #0b8f62 100%);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 10px 20px -12px rgba(11, 143, 98, 0.9);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.store-bg {
+  background: #f3f6f4;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+  min-width: 640px;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }

@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'StockSense – Inventory Management System',
-  description: 'Real-time inventory management with multi-warehouse support, stock tracking, receipts, deliveries, and full audit trail.',
+  title: 'StockSense — Groceries in minutes',
+  description: 'Quick-commerce grocery store with live warehouse inventory, cash on delivery, and a staff operations desk.',
 };
 
 export default function RootLayout({ children }) {

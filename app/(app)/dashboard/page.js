@@ -49,7 +49,7 @@ export default function DashboardPage() {
   const locations = data?.locations || [];
 
   return (
-    <div className="space-y-8 animate-fade-in pb-10">
+    <div className="space-y-6 animate-fade-in pb-10 max-w-7xl">
       {/* Header & Quick Action Buttons */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200/60 pb-6">
         <div>
@@ -66,17 +66,17 @@ export default function DashboardPage() {
         </div>
 
         {/* Action Shortcuts */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 w-full lg:w-auto">
           <Link
             href="/receipts"
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-800/20 transition-all active:scale-95"
           >
             <span>📥</span>
             <span>Receive Stock</span>
           </Link>
           <Link
             href="/deliveries"
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95"
           >
             <span>📤</span>
             <span>Dispatch / Deliver</span>
@@ -103,15 +103,15 @@ export default function DashboardPage() {
         {/* Total SKUs */}
         <Link
           href="/products"
-          className="bg-white rounded-2xl p-5 border border-slate-100 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all group"
+          className="bg-white rounded-2xl p-5 border border-slate-100 hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-900/5 transition-all group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Catalog SKUs</span>
-            <span className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg font-bold">
+            <span className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg font-bold">
               📦
             </span>
           </div>
-          <p className="text-3xl font-extrabold text-slate-900 mt-3 group-hover:text-indigo-600 transition-colors">
+          <p className="text-3xl font-extrabold text-slate-900 mt-3 group-hover:text-emerald-700 transition-colors">
             {kpis.totalProducts ?? 0}
           </p>
           <p className="text-xs text-slate-400 mt-1">Managed product lines</p>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
                 {lowStockList.length} Items
               </span>
             </div>
-            <Link href="/products?filter=low" className="text-xs text-indigo-600 hover:text-indigo-800 font-bold">
+            <Link href="/products?filter=low" className="text-xs text-emerald-700 hover:text-emerald-900 font-bold">
               View All →
             </Link>
           </div>

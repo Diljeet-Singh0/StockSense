@@ -45,22 +45,21 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
-      {/* Background glowing gradients */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-[#10231c] px-4 py-12 relative overflow-hidden">
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-amber-300/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md animate-fade-in relative z-10 space-y-6">
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 rounded-2xl mb-4 shadow-xl shadow-indigo-500/30">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-2xl mb-4 shadow-xl shadow-emerald-900/40">
             <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
           <div className="flex items-center justify-center gap-2 mb-1">
             <h1 className="text-2xl font-black text-white tracking-tight">StockSense IMS</h1>
-            <span className="bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="bg-emerald-400/15 border border-emerald-300/30 text-emerald-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
               Staff Portal
             </span>
           </div>
@@ -76,14 +75,14 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setForm({ email: 'admin@stocksense.com', password: 'admin123' })}
-              className="flex-1 py-1.5 px-2 bg-slate-700/70 hover:bg-indigo-600 text-white rounded-lg text-[11px] font-semibold transition-colors text-center"
+              className="flex-1 py-1.5 px-2 bg-white/10 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-semibold transition-colors text-center"
             >
               Inventory Manager
             </button>
             <button
               type="button"
               onClick={() => setForm({ email: 'staff@stocksense.com', password: 'admin123' })}
-              className="flex-1 py-1.5 px-2 bg-slate-700/70 hover:bg-indigo-600 text-white rounded-lg text-[11px] font-semibold transition-colors text-center"
+              className="flex-1 py-1.5 px-2 bg-white/10 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-semibold transition-colors text-center"
             >
               Warehouse Staff
             </button>
@@ -120,7 +119,7 @@ function LoginForm() {
                 <label htmlFor="password" className="block text-xs font-bold text-slate-700">
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+                <Link href="/forgot-password" className="text-xs text-emerald-700 hover:text-emerald-800 font-medium">
                   Forgot password?
                 </Link>
               </div>
@@ -138,7 +137,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/25 active:scale-98 transition-all disabled:opacity-50"
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-lg shadow-emerald-800/25 transition-all disabled:opacity-50"
             >
               {loading ? 'Authenticating...' : 'Sign In to IMS'}
             </button>
@@ -147,7 +146,7 @@ function LoginForm() {
           <div className="pt-2 text-center text-xs border-t border-slate-100 space-y-2">
             <p className="text-slate-400">
               Customer looking to shop?{' '}
-              <Link href="/" className="text-indigo-600 font-bold hover:underline">
+              <Link href="/" className="text-emerald-700 font-bold hover:underline">
                 Visit Customer Storefront →
               </Link>
             </p>

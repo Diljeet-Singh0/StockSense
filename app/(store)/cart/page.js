@@ -50,7 +50,7 @@ export default function CartPage() {
       </div>
 
       {/* Express Delivery Banner */}
-      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 sm:p-5 rounded-3xl shadow-lg shadow-emerald-500/15 flex items-center justify-between">
+      <div className="bg-[#10231c] text-white p-4 sm:p-5 rounded-3xl shadow-lg flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shrink-0">
             ⚡
@@ -71,15 +71,11 @@ export default function CartPage() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 flex items-center justify-between gap-4 shadow-sm hover:border-slate-300 transition-all"
+              className="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-slate-300 transition-all"
             >
               <div className="flex items-center gap-4 min-w-0">
-                <div className="w-18 h-18 rounded-2xl bg-slate-50 border border-slate-100 shrink-0 overflow-hidden flex items-center justify-center p-2">
-                  {item.imageUrl ? (
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
-                  ) : (
-                    <span className="text-2xl text-slate-300">📦</span>
-                  )}
+                <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 shrink-0 overflow-hidden flex items-center justify-center p-2">
+                  <img src={item.imageUrl || '/products/rice.jpg'} alt={item.name} className="w-full h-full object-cover" />
                 </div>
 
                 <div className="min-w-0">
@@ -96,7 +92,7 @@ export default function CartPage() {
               </div>
 
               {/* Stepper & Total */}
-              <div className="flex items-center gap-4 shrink-0">
+              <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
                 <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 text-xs font-bold shadow-sm">
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}

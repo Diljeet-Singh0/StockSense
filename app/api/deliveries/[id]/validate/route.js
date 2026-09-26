@@ -30,6 +30,28 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Cannot validate a canceled delivery' }, { status: 400 });
     }
 
+    // Storefront orders already reserved stock when the customer checked out.
+    if (delivery.source === 'CUSTOMER_ORDER') {
+      const updatedDelivery = await prisma.$transaction(async (tx) => {
+        const done = await tx.deliveryOrder.update({
+          where: { id },
+          data: { status: 'DONE', validatedAt: new Date() },
+        });
+        if (delivery.customerOrderId) {
+          await tx.customerOrder.update({
+            where: { id: delivery.customerOrderId },
+            data: { status: 'DELIVERED' },
+          });
+        }
+        return done;
+      });
+      return NextResponse.json({
+        success: true,
+        message: 'Customer delivery marked delivered. Stock was already reserved at checkout.',
+        delivery: updatedDelivery,
+      });
+    }
+
     // Check available stock for each line at the delivery location
     const insufficientStockErrors = [];
     for (const line of delivery.lines) {

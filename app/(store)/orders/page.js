@@ -75,11 +75,11 @@ export default function CustomerOrdersPage() {
             return (
               <div
                 key={order.id}
-                className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-7 shadow-sm hover:border-slate-300 hover:shadow-md transition-all space-y-4"
+                className="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-7 shadow-sm hover:border-slate-300 hover:shadow-md transition-all space-y-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                   <div>
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
                       <span className="font-mono text-base font-black text-slate-900">{order.orderNumber}</span>
                       <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${statusInfo.class}`}>
                         {statusInfo.label}
@@ -96,7 +96,7 @@ export default function CustomerOrdersPage() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                     <div className="text-right">
                       <span className="text-[10px] text-slate-400 block uppercase font-bold">Total (COD)</span>
                       <span className="text-lg font-black text-slate-900">₹{order.totalAmount.toFixed(0)}</span>

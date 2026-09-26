@@ -123,17 +123,17 @@ export default function AppLayout({ children }) {
         )}
 
         {/* Sidebar */}
-        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar-bg transform transition-transform duration-200 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[17rem] bg-[#10231c] transform transition-transform duration-200 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
-            <div className="w-9 h-9 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+            <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/40">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
             <div>
-              <h1 className="text-white font-bold text-lg tracking-tight">StockSense</h1>
-              <p className="text-slate-500 text-xs">Inventory Management</p>
+              <h1 className="text-white font-extrabold text-lg tracking-tight">StockSense</h1>
+              <p className="text-emerald-200/50 text-[11px] font-medium">Warehouse desk</p>
             </div>
           </div>
 
@@ -156,16 +156,16 @@ export default function AppLayout({ children }) {
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
                     isActive
-                      ? 'bg-indigo-500/15 text-indigo-400'
+                      ? 'bg-emerald-400/15 text-emerald-200 shadow-inner'
                       : 'text-sidebar-text hover:bg-sidebar-hover hover:text-white'
                   }`}
                 >
-                  <span className={`transition-colors ${isActive ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
+                  <span className={`transition-colors ${isActive ? 'text-emerald-300' : 'text-slate-500 group-hover:text-slate-300'}`}>
                     {item.icon}
                   </span>
                   {item.label}
                   {isActive && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-300" />
                   )}
                 </Link>
               );
@@ -175,7 +175,7 @@ export default function AppLayout({ children }) {
           {/* User section */}
           <div className="border-t border-white/5 p-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-semibold text-sm">
                 {user?.name?.charAt(0)?.toUpperCase() || '?'}
               </div>
               <div className="flex-1 min-w-0">
@@ -198,7 +198,7 @@ export default function AppLayout({ children }) {
         {/* Main content */}
         <main className="flex-1 flex flex-col overflow-hidden">
           {/* Top bar */}
-          <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-sm flex items-center justify-between px-6 shrink-0">
+          <header className="h-16 border-b border-emerald-950/5 bg-white/80 backdrop-blur-md flex items-center justify-between px-3 sm:px-6 shrink-0 gap-2">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -220,22 +220,22 @@ export default function AppLayout({ children }) {
               <Link
                 href="/"
                 target="_blank"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-all shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
               >
-                <span>🏪 View Customer Storefront</span>
+                <span className="hidden sm:inline">View store</span>
+                <span className="sm:hidden">Store</span>
                 <span className="text-[10px]">↗</span>
               </Link>
 
               {user && (
-                <span className="hidden md:inline-block px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-xs font-bold uppercase tracking-wider">
+                <span className="hidden md:inline-block px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-lg text-xs font-bold uppercase tracking-wider">
                   {user.role}
                 </span>
               )}
             </div>
           </header>
 
-          {/* Page content */}
-          <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-7">
             {children}
           </div>
         </main>
