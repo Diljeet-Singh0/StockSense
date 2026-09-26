@@ -148,6 +148,16 @@ function StoreNavbar() {
                 </Link>
               </div>
             )}
+
+            {/* Discreet Admin Login Link */}
+            <div className="h-5 w-px bg-slate-200 hidden sm:block mx-0.5" />
+            <Link
+              href="/admin/login"
+              className="text-slate-400 hover:text-slate-600 text-xs font-medium transition-colors px-2 py-1.5 rounded-lg hover:bg-slate-100/60 shrink-0"
+              title="Staff & Inventory Management Portal"
+            >
+              Admin Login
+            </Link>
           </div>
         </div>
       </header>

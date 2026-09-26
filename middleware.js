@@ -7,7 +7,7 @@ const isStorefrontPublic = (pathname) => {
   if (pathname.startsWith('/product/')) return true;
   if (pathname === '/cart') return true;
   if (pathname.startsWith('/customer/')) return true;
-  if (pathname === '/login' || pathname === '/forgot-password' || pathname === '/reset-password') return true;
+  if (pathname === '/login' || pathname === '/admin/login' || pathname === '/forgot-password' || pathname === '/reset-password') return true;
   if (pathname.startsWith('/api/auth/')) return true;
   if (pathname.startsWith('/api/store/')) return true;
   return false;
@@ -25,6 +25,7 @@ const isCustomerProtected = (pathname) => {
 
 // Admin / Inventory routes (requires MANAGER or STAFF)
 const isAdminRoute = (pathname) => {
+  if (pathname === '/admin/login') return false;
   return (
     pathname === '/admin' ||
     pathname.startsWith('/admin/') ||
@@ -74,19 +75,19 @@ export async function middleware(request) {
     if (user && (user.role === 'MANAGER' || user.role === 'STAFF')) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
   // Admin route check
   if (isAdminRoute(pathname)) {
     if (!user) {
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
     if (user.role !== 'MANAGER' && user.role !== 'STAFF') {
       // Customer trying to access admin inventory
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('error', 'Restricted: Warehouse staff access only');
       return NextResponse.redirect(loginUrl);
     }

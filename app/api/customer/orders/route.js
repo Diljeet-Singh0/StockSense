@@ -198,7 +198,7 @@ export async function POST(request) {
         },
       });
 
-      // Step C: Deduct stock from fulfillment warehouse & append to immutable stock_moves ledger
+      // Step C: Deduct stock from warehouse locations holding the stock & append to immutable stock_moves ledger
       for (const item of validatedProducts) {
         await tx.stockLevel.update({
           where: {

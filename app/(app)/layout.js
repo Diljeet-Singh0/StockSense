@@ -108,7 +108,7 @@ export default function AppLayout({ children }) {
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
+    router.push('/admin/login');
   };
 
   return (

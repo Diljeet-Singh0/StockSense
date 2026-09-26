@@ -101,33 +101,43 @@ export async function POST(request, { params }) {
         },
       });
 
-      // 2. Decrease stock and record stock move for each line
-      for (const line of delivery.lines) {
-        const qty = Number(line.quantity);
+      // Sync customer order status to DELIVERED if linked
+      if (delivery.customerOrderId) {
+        await tx.customerOrder.update({
+          where: { id: delivery.customerOrderId },
+          data: { status: 'DELIVERED' },
+        });
+      }
 
-        await tx.stockLevel.update({
-          where: {
-            productId_locationId: {
+      // 2. Decrease stock and record stock move for each line (only for manual deliveries)
+      if (delivery.source !== 'CUSTOMER_ORDER') {
+        for (const line of delivery.lines) {
+          const qty = Number(line.quantity);
+
+          await tx.stockLevel.update({
+            where: {
+              productId_locationId: {
+                productId: line.productId,
+                locationId: delivery.locationId,
+              },
+            },
+            data: {
+              quantity: { decrement: qty },
+            },
+          });
+
+          await tx.stockMove.create({
+            data: {
               productId: line.productId,
               locationId: delivery.locationId,
+              quantityChange: -qty, // Negative quantity change
+              moveType: 'DELIVERY',
+              referenceId: delivery.id,
+              referenceType: 'delivery',
+              createdBy: userId,
             },
-          },
-          data: {
-            quantity: { decrement: qty },
-          },
-        });
-
-        await tx.stockMove.create({
-          data: {
-            productId: line.productId,
-            locationId: delivery.locationId,
-            quantityChange: -qty, // Negative quantity change
-            moveType: 'DELIVERY',
-            referenceId: delivery.id,
-            referenceType: 'delivery',
-            createdBy: userId,
-          },
-        });
+          });
+        }
       }
 
       return updatedDelivery;
