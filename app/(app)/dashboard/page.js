@@ -95,6 +95,20 @@ export default function DashboardPage() {
             <span>Internal Transfer</span>
           </Link>
           <Link
+            href="/suggestions"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+          >
+            <span>🧠</span>
+            <span>Buy Plan</span>
+          </Link>
+          <a
+            href="/api/reports/inventory"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold shadow-sm transition-all"
+          >
+            <span>📊</span>
+            <span>Export Report</span>
+          </a>
+          <Link
             href="/adjustments"
             className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold shadow-sm transition-all"
           >

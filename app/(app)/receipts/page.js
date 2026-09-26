@@ -159,6 +159,23 @@ function ReceiptsContent() {
     }
   };
 
+  const handleCancel = async (id, ref) => {
+    setError('');
+    setSuccess('');
+    const res = await fetch(`/api/receipts/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'CANCELED' }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || 'Failed to cancel receipt');
+      return;
+    }
+    setSuccess(`Receipt ${ref} canceled before stock was received.`);
+    fetchReceipts();
+  };
+
   const handleExportCSV = () => {
     const headers = ['Reference', 'Supplier', 'Destination Location', 'Total Items', 'Status', 'Date', 'Created By'];
     const rows = receipts.map((r) => [
@@ -323,13 +340,21 @@ function ReceiptsContent() {
                     <td className="px-4 py-4 text-slate-500 font-medium">{r.creator.name}</td>
                     <td className="px-6 py-4 text-right">
                       {r.status !== 'DONE' && r.status !== 'CANCELED' ? (
-                        <button
-                          onClick={() => handleValidate(r.id, r.reference)}
-                          disabled={validatingId === r.id}
-                          className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all active:scale-95 disabled:opacity-50"
-                        >
-                          {validatingId === r.id ? 'Stocking...' : 'Validate & Receive'}
-                        </button>
+                        <div className="flex justify-end gap-1.5">
+                          <button
+                            onClick={() => handleCancel(r.id, r.reference)}
+                            className="px-2.5 py-1.5 bg-white border border-rose-200 text-rose-700 rounded-xl text-xs font-bold"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleValidate(r.id, r.reference)}
+                            disabled={validatingId === r.id}
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition-all active:scale-95 disabled:opacity-50"
+                          >
+                            {validatingId === r.id ? 'Stocking...' : 'Validate & Receive'}
+                          </button>
+                        </div>
                       ) : r.status === 'DONE' ? (
                         <span className="text-xs text-emerald-600 font-bold flex items-center justify-end gap-1">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

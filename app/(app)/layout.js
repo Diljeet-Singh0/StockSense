@@ -55,6 +55,42 @@ const navItems = [
     ),
   },
   {
+    label: 'Scanner',
+    href: '/scanner',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7V5a1 1 0 011-1h2M16 4h2a1 1 0 011 1v2M20 16v2a1 1 0 01-1 1h-2M8 20H6a1 1 0 01-1-1v-2M7 12h10" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Rebalance',
+    href: '/rebalance',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+      </svg>
+    ),
+  },
+  {
+    label: 'ABC Analysis',
+    href: '/analytics',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 3v18M5 9l6-6 6 6M5 15h12" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Buy Suggestions',
+    href: '/suggestions',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-6m3 6V7m3 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
     label: 'Adjustments',
     href: '/adjustments',
     icon: (

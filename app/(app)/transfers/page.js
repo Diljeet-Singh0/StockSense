@@ -124,6 +124,23 @@ export default function TransfersPage() {
     }
   };
 
+  const handleCancel = async (id, ref) => {
+    setError('');
+    setSuccess('');
+    const res = await fetch(`/api/transfers/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'CANCELED' }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || 'Failed to cancel transfer');
+      return;
+    }
+    setSuccess(`Transfer ${ref} canceled before stock moved.`);
+    fetchTransfers();
+  };
+
   const statusBadges = {
     DRAFT: 'badge-draft',
     WAITING: 'badge-waiting',
@@ -260,13 +277,21 @@ export default function TransfersPage() {
                     <td className="px-6 py-4 text-xs text-slate-500">{t.creator.name}</td>
                     <td className="px-6 py-4 text-right">
                       {t.status !== 'DONE' && t.status !== 'CANCELED' ? (
-                        <button
-                          onClick={() => handleValidate(t.id, t.reference)}
-                          disabled={validatingId === t.id}
-                          className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50"
-                        >
-                          {validatingId === t.id ? 'Moving...' : 'Execute Transfer'}
-                        </button>
+                        <div className="flex justify-end gap-1.5">
+                          <button
+                            onClick={() => handleCancel(t.id, t.reference)}
+                            className="px-2.5 py-1.5 bg-white border border-rose-200 text-rose-700 rounded-lg text-xs font-bold"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleValidate(t.id, t.reference)}
+                            disabled={validatingId === t.id}
+                            className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                          >
+                            {validatingId === t.id ? 'Moving...' : 'Execute Transfer'}
+                          </button>
+                        </div>
                       ) : t.status === 'DONE' ? (
                         <span className="text-xs text-purple-600 font-semibold flex items-center justify-end gap-1">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

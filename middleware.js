@@ -41,6 +41,14 @@ const isAdminRoute = (pathname) => {
     pathname.startsWith('/transfers/') ||
     pathname === '/adjustments' ||
     pathname.startsWith('/adjustments/') ||
+    pathname === '/suggestions' ||
+    pathname.startsWith('/suggestions/') ||
+    pathname === '/scanner' ||
+    pathname.startsWith('/scanner/') ||
+    pathname === '/rebalance' ||
+    pathname.startsWith('/rebalance/') ||
+    pathname === '/analytics' ||
+    pathname.startsWith('/analytics/') ||
     pathname === '/history' ||
     pathname.startsWith('/history/') ||
     pathname === '/warehouses' ||

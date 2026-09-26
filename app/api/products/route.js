@@ -28,7 +28,7 @@ export async function GET(request) {
       include: {
         category: { select: { name: true } },
         stockLevels: {
-          include: { location: { select: { name: true } } },
+          include: { location: { select: { id: true, name: true, code: true } } },
         },
       },
       orderBy: { createdAt: 'desc' },
