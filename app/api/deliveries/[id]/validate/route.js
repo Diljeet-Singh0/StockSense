@@ -30,42 +30,44 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Cannot validate a canceled delivery' }, { status: 400 });
     }
 
-    // Check available stock for each line at the delivery location
-    const insufficientStockErrors = [];
-    for (const line of delivery.lines) {
-      const stock = await prisma.stockLevel.findUnique({
-        where: {
-          productId_locationId: {
-            productId: line.productId,
-            locationId: delivery.locationId,
+    // Check available stock for each line at the delivery location (for manual deliveries)
+    if (delivery.source !== 'CUSTOMER_ORDER') {
+      const insufficientStockErrors = [];
+      for (const line of delivery.lines) {
+        const stock = await prisma.stockLevel.findUnique({
+          where: {
+            productId_locationId: {
+              productId: line.productId,
+              locationId: delivery.locationId,
+            },
           },
-        },
-      });
-
-      const currentQty = stock ? Number(stock.quantity) : 0;
-      const requestedQty = Number(line.quantity);
-
-      if (currentQty < requestedQty) {
-        insufficientStockErrors.push({
-          productName: line.product.name,
-          sku: line.product.sku,
-          available: currentQty,
-          requested: requestedQty,
         });
-      }
-    }
 
-    if (insufficientStockErrors.length > 0) {
-      const details = insufficientStockErrors
-        .map((e) => `${e.productName} (${e.sku}): Available ${e.available}, Requested ${e.requested}`)
-        .join('; ');
-      return NextResponse.json(
-        {
-          error: `Insufficient stock for delivery: ${details}`,
-          insufficientItems: insufficientStockErrors,
-        },
-        { status: 400 }
-      );
+        const currentQty = stock ? Number(stock.quantity) : 0;
+        const requestedQty = Number(line.quantity);
+
+        if (currentQty < requestedQty) {
+          insufficientStockErrors.push({
+            productName: line.product.name,
+            sku: line.product.sku,
+            available: currentQty,
+            requested: requestedQty,
+          });
+        }
+      }
+
+      if (insufficientStockErrors.length > 0) {
+        const details = insufficientStockErrors
+          .map((e) => `${e.productName} (${e.sku}): Available ${e.available}, Requested ${e.requested}`)
+          .join('; ');
+        return NextResponse.json(
+          {
+            error: `Insufficient stock for delivery: ${details}`,
+            insufficientItems: insufficientStockErrors,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Execute atomic transaction: update status, decrease stock levels, insert ledger moves
@@ -79,33 +81,43 @@ export async function POST(request, { params }) {
         },
       });
 
-      // 2. Decrease stock and record stock move for each line
-      for (const line of delivery.lines) {
-        const qty = Number(line.quantity);
+      // Sync customer order status to DELIVERED if linked
+      if (delivery.customerOrderId) {
+        await tx.customerOrder.update({
+          where: { id: delivery.customerOrderId },
+          data: { status: 'DELIVERED' },
+        });
+      }
 
-        await tx.stockLevel.update({
-          where: {
-            productId_locationId: {
+      // 2. Decrease stock and record stock move for each line (only for manual deliveries)
+      if (delivery.source !== 'CUSTOMER_ORDER') {
+        for (const line of delivery.lines) {
+          const qty = Number(line.quantity);
+
+          await tx.stockLevel.update({
+            where: {
+              productId_locationId: {
+                productId: line.productId,
+                locationId: delivery.locationId,
+              },
+            },
+            data: {
+              quantity: { decrement: qty },
+            },
+          });
+
+          await tx.stockMove.create({
+            data: {
               productId: line.productId,
               locationId: delivery.locationId,
+              quantityChange: -qty, // Negative quantity change
+              moveType: 'DELIVERY',
+              referenceId: delivery.id,
+              referenceType: 'delivery',
+              createdBy: userId,
             },
-          },
-          data: {
-            quantity: { decrement: qty },
-          },
-        });
-
-        await tx.stockMove.create({
-          data: {
-            productId: line.productId,
-            locationId: delivery.locationId,
-            quantityChange: -qty, // Negative quantity change
-            moveType: 'DELIVERY',
-            referenceId: delivery.id,
-            referenceType: 'delivery',
-            createdBy: userId,
-          },
-        });
+          });
+        }
       }
 
       return updatedDelivery;

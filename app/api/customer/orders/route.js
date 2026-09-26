@@ -80,7 +80,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No active fulfillment warehouse found' }, { status: 500 });
     }
 
-    // 1. Verify stock availability for all items before starting transaction
+    // 1. Verify stock availability for all items across inventory locations
     const insufficientStockErrors = [];
     const validatedProducts = [];
     let calculatedTotal = 0;
@@ -89,9 +89,7 @@ export async function POST(request) {
       const product = await prisma.product.findUnique({
         where: { id: item.productId },
         include: {
-          stockLevels: {
-            where: { locationId: fulfillmentHub.id },
-          },
+          stockLevels: true,
         },
       });
 
@@ -99,7 +97,7 @@ export async function POST(request) {
         return NextResponse.json({ error: `Product not found: ${item.productId}` }, { status: 404 });
       }
 
-      const availableQty = product.stockLevels[0] ? Number(product.stockLevels[0].quantity) : 0;
+      const availableQty = product.stockLevels.reduce((sum, sl) => sum + Number(sl.quantity), 0);
       const requestedQty = Number(item.quantity);
 
       if (availableQty < requestedQty) {
@@ -193,31 +191,40 @@ export async function POST(request) {
         },
       });
 
-      // Step C: Deduct stock from fulfillment warehouse & append to immutable stock_moves ledger
+      // Step C: Deduct stock from warehouse locations holding the stock & append to immutable stock_moves ledger
       for (const item of validatedProducts) {
-        await tx.stockLevel.update({
-          where: {
-            productId_locationId: {
-              productId: item.product.id,
-              locationId: fulfillmentHub.id,
-            },
-          },
-          data: {
-            quantity: { decrement: item.quantity },
-          },
+        let remainingToDeduct = item.quantity;
+        const stockLevels = await tx.stockLevel.findMany({
+          where: { productId: item.product.id, quantity: { gt: 0 } },
+          orderBy: { quantity: 'desc' },
         });
 
-        await tx.stockMove.create({
-          data: {
-            productId: item.product.id,
-            locationId: fulfillmentHub.id,
-            quantityChange: -item.quantity,
-            moveType: 'DELIVERY',
-            referenceId: order.id,
-            referenceType: 'customer_order',
-            createdBy: customerId,
-          },
-        });
+        for (const sl of stockLevels) {
+          if (remainingToDeduct <= 0) break;
+          const available = Number(sl.quantity);
+          const deduct = Math.min(available, remainingToDeduct);
+
+          await tx.stockLevel.update({
+            where: { id: sl.id },
+            data: {
+              quantity: { decrement: deduct },
+            },
+          });
+
+          await tx.stockMove.create({
+            data: {
+              productId: item.product.id,
+              locationId: sl.locationId,
+              quantityChange: -deduct,
+              moveType: 'DELIVERY',
+              referenceId: order.id,
+              referenceType: 'customer_order',
+              createdBy: customerId,
+            },
+          });
+
+          remainingToDeduct -= deduct;
+        }
       }
 
       return { order, deliveryOrder };

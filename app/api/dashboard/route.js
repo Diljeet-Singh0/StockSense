@@ -64,7 +64,7 @@ export async function GET() {
         orderBy: { createdAt: 'desc' },
         take: 5,
         include: {
-          user: { select: { name: true, email: true, phone: true } },
+          customer: { select: { name: true, email: true, phone: true } },
           lines: {
             include: { product: { select: { name: true, sku: true } } },
           },
@@ -143,8 +143,8 @@ export async function GET() {
         status: o.status,
         totalAmount: Number(o.totalAmount),
         createdAt: o.createdAt,
-        customerName: o.user.name,
-        customerPhone: o.user.phone,
+        customerName: o.customer?.name || 'Customer',
+        customerPhone: o.customer?.phone || o.customerPhone || '',
         itemCount: o.lines.length,
         deliveryOrderId: o.deliveryOrder?.id || null,
         deliveryRef: o.deliveryOrder?.reference || null,

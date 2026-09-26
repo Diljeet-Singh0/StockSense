@@ -33,6 +33,12 @@ function StoreNavbar() {
 
           <div className="flex items-center gap-4 shrink-0 text-[11px]">
             <span className="text-slate-400 hidden md:inline">Need assistance? +91 80 4920 1100</span>
+            <Link
+              href="/admin/login"
+              className="text-slate-500 hover:text-slate-300 transition-colors hidden sm:inline"
+            >
+              Staff Portal
+            </Link>
           </div>
         </div>
       </div>
@@ -187,6 +193,16 @@ function StoreNavbar() {
                 </Link>
               </div>
             )}
+
+            {/* Discreet Admin Login Link */}
+            <div className="h-5 w-px bg-slate-200 hidden sm:block mx-0.5" />
+            <Link
+              href="/admin/login"
+              className="text-slate-400 hover:text-slate-600 text-xs font-medium transition-colors px-2 py-1.5 rounded-lg hover:bg-slate-100/60 shrink-0"
+              title="Staff & Inventory Management Portal"
+            >
+              Admin Login
+            </Link>
           </div>
         </div>
       </header>
